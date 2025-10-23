@@ -26,8 +26,6 @@ SECRET_KEY = 'django-insecure-(2*6zn_2!wyf9zrvgcd2k2(n4@74uc5@159nw2#_!3m6)qewxk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# ALLOWED_HOSTS = ['.vercel.app', 'finance-manager-ashen.vercel.app', '127.0.0.1']
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -114,7 +112,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', 'finance-manager-ecru.vercel.app']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
@@ -130,4 +128,5 @@ STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static" # Pasta onde collectstat
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
+
 LOGOUT_REDIRECT_URL = '/registration/login'
