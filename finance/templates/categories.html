@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}Categorias | FinanceHub{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold">Gerenciar Categorias</h1>
+        <p class="text-gray-400 text-sm">Adicione, edite ou remova suas categorias.</p>
+    </div>
+</div>
+
+{% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <div class="p-3 rounded-md mb-2 {% if message.tags %} {% if message.tags == 'error' %}bg-red-600{% else %}bg-green-600 text-black{% endif %} {% else %} bg-gray-800 {% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+    <div class="md:col-span-1">
+        <div class="bg-gray-800 rounded-2xl p-6 sticky top-8">
+            <h3 class="text-xl font-bold mb-4">Nova Categoria</h3>
+
+            <form method="post" action="{% url 'category_list_create' %}?status={{ current_filter }}"> {% csrf_token %}
+
+                <div class="mb-4">
+                    <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-300">{{ form.name.label }}</label>
+                    {{ form.name }}
+                    {% if form.name.errors %} <div class="text-red-400 text-sm mt-1">{{ form.name.errors }}</div> {% endif %}
+                </div>
+                <div class="mb-4">
+                    <label for="{{ form.type.id_for_label }}" class="block text-sm font-medium text-gray-300">{{ form.type.label }}</label>
+                    {{ form.type }}
+                    {% if form.type.errors %} <div class="text-red-400 text-sm mt-1">{{ form.type.errors }}</div> {% endif %}
+                </div>
+                <div class="mb-4">
+                    <label for="{{ form.classification.id_for_label }}" class="block text-sm font-medium text-gray-300">{{ form.classification.label }}</label>
+                    {{ form.classification }}
+                    {% if form.classification.errors %} <div class="text-red-400 text-sm mt-1">{{ form.classification.errors }}</div> {% endif %}
+                </div>
+                <div class="mb-4">
+                    <label for="{{ form.financial_bucket.id_for_label }}" class="block text-sm font-medium text-gray-300">{{ form.financial_bucket.label }}</label>
+                    {{ form.financial_bucket }}
+                    {% if form.financial_bucket.errors %} <div class="text-red-400 text-sm mt-1">{{ form.financial_bucket.errors }}</div> {% endif %}
+                </div>
+
+                <button type="submit" class="w-full px-4 py-2 bg-green-500 rounded-md text-black font-semibold">
+                    Salvar Categoria
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="md:col-span-2">
+        <div class="mb-6 flex space-x-2">
+            <a href="{% url 'category_list_create' %}?status=active"
+               class="px-4 py-2 rounded-md text-sm font-medium
+                      {% if current_filter == 'active' %} bg-purple-600 text-white
+                      {% else %} bg-gray-700 text-gray-300 hover:bg-gray-600 {% endif %}">
+               Ativas
+            </a>
+            <a href="{% url 'category_list_create' %}?status=inactive"
+               class="px-4 py-2 rounded-md text-sm font-medium
+                      {% if current_filter == 'inactive' %} bg-purple-600 text-white
+                      {% else %} bg-gray-700 text-gray-300 hover:bg-gray-600 {% endif %}">
+               Arquivadas
+            </a>
+            <a href="{% url 'category_list_create' %}?status=all"
+               class="px-4 py-2 rounded-md text-sm font-medium
+                      {% if current_filter == 'all' %} bg-purple-600 text-white
+                      {% else %} bg-gray-700 text-gray-300 hover:bg-gray-600 {% endif %}">
+               Todas
+            </a>
+        </div>
+
+        <div class="bg-gray-800 rounded-2xl p-4">
+            <h3 class="text-xl font-bold mb-4 px-4">Categorias Existentes</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto text-left">
+                    <thead>
+                        <tr class="text-sm text-gray-400">
+                            <th class="px-4 py-3">Nome</th>
+                            <th class="px-4 py-3">Tipo</th>
+                            <th class="px-4 py-3">Classificação</th>
+                            <th class="px-4 py-3">Balde (50/30/20)</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3 text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cat in categories %}
+                        <tr class="border-t border-gray-700 {% if not cat.is_active %} opacity-60 {% endif %}">
+                            <td class="px-4 py-3 text-sm text-gray-200">
+                                {{ cat.name }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {% if cat.type == "R" %} <span class="text-green-400">Receita</span> {% else %} <span class="text-red-400">Despesa</span> {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-300"> {{ cat.get_classification_display }} </td>
+                            <td class="px-4 py-3 text-sm text-gray-300"> {{ cat.get_financial_bucket_display }} </td>
+                            <td class="px-4 py-3 text-sm">
+                                {% if cat.is_active %} <span class="text-green-400">Ativa</span> {% else %} <span class="text-gray-500">Arquivada</span> {% endif %}
+                            </td>
+
+                            <td class="px-4 py-3">
+                                <div class="flex justify-end space-x-2">
+                                    <a href="{% url 'category_edit' cat.pk %}?status={{ current_filter }}"
+                                       class="px-3 py-1 bg-yellow-600 rounded-md text-sm text-black {% if not cat.is_active %} opacity-50 cursor-not-allowed {% endif %}"
+                                       {% if not cat.is_active %} aria-disabled="true" onclick="event.preventDefault(); alert('Categorias arquivadas não podem ser editadas.');" {% endif %}>Editar</a>
+
+                                    <form action="{% url 'category_toggle_active' cat.pk %}" method="post" class="inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="current_filter" value="{{ current_filter }}">
+                                        <button type="submit" class="px-3 py-1 {% if cat.is_active %} bg-gray-600 {% else %} bg-green-600 text-black {% endif %} rounded-md text-sm">
+                                            {% if cat.is_active %} Arquivar {% else %} Reativar {% endif %}
+                                        </button>
+                                    </form>
+
+                                    <form action="{% url 'category_delete' cat.pk %}" method="post"
+                                          onsubmit="return confirm('Atenção: A categoria só será excluída se não estiver em uso.\nConfirmar exclusão definitiva de \'{{ cat.name|escapejs }}\'?')"
+                                          class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="px-3 py-1 bg-red-600 rounded-md text-sm">Excluir</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-4 py-6 text-center text-gray-400">
+                                Nenhuma categoria encontrada {% if current_filter != 'all' %} com o filtro "{{ current_filter|title }}"{% endif %}.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

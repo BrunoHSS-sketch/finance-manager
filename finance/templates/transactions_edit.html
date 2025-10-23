@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Editar Transação | FinanceHub{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold">Editar Transação #{{ entry.pk }}</h1> 
+        <p class="text-gray-400 text-sm">Altere os dados do lançamento.</p>
+    </div>
+    <div>
+        <a href="{% url 'transactions_list' %}" class="px-4 py-2 bg-gray-700 rounded-md text-sm">
+            &larr; Voltar para Transações
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <div class="p-3 rounded-md mb-2 {% if message.tags %} {% if message.tags == 'error' %}bg-red-600{% else %}bg-green-600 text-black{% endif %} {% else %} bg-gray-800 {% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="bg-gray-800 rounded-2xl p-6 max-w-2xl mx-auto">
+    
+    <form method="post" action=""> 
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="p-3 bg-red-700 text-white rounded-md mb-4">
+                {% for error in form.non_field_errors %} <p>{{ error }}</p> {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm text-gray-300 mb-1">{{ form.category.label }}</label>
+                {{ form.category }} 
+                {% if form.category.errors %}
+                    <div class="text-red-400 text-sm mt-1">{{ form.category.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-sm text-gray-300 mb-1">Valor</label>
+                {{ form.value }}
+                {% if form.value.errors %}
+                    <div class="text-red-400 text-sm mt-1">{{ form.value.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-sm text-gray-300 mb-1">Data de pagamento</label>
+                {{ form.date_payment }}
+                {% if form.date_payment.errors %}
+                    <div class="text-red-400 text-sm mt-1">{{ form.date_payment.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="col-span-2">
+                <label class="block text-sm text-gray-300 mb-1">Descrição</label>
+                {{ form.describe }}
+                {% if form.describe.errors %}
+                    <div class="text-red-400 text-sm mt-1">{{ form.describe.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <button type="submit" class="w-full px-4 py-2 bg-yellow-600 rounded-md text-black font-semibold">
+                Salvar Alterações
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

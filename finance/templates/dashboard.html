@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | FinanceHub{% endblock %}
+{% load humanize %} {% block content %}
+<h1 class="text-3xl font-bold mb-2">Dashboard</h1>
+<p class="text-gray-400 mb-6">Bem-vindo de volta! Aqui está um resumo das suas finanças.</p>
+
+<form method="get" class="mb-6 bg-gray-800 rounded-2xl p-4 flex items-center space-x-3">
+    <div>
+        <label for="date_from" class="block text-sm font-medium text-gray-300 mb-1">Data Inicial</label>
+        <input type="date" name="date_from" id="date_from" value="{{ date_from }}" class="bg-gray-700 text-gray-100 p-2 rounded-md">
+    </div>
+    <div>
+        <label for="date_to" class="block text-sm font-medium text-gray-300 mb-1">Data Final</label>
+        <input type="date" name="date_to" id="date_to" value="{{ date_to }}" class="bg-gray-700 text-gray-100 p-2 rounded-md">
+    </div>
+    <button type="submit" class="px-4 py-2 bg-purple-600 rounded-md text-white self-end">Filtrar</button>
+    <a href="{% url 'dashboard' %}" class="px-4 py-2 bg-gray-600 rounded-md text-white self-end">Limpar</a>
+</form>
+
+<div class="grid grid-cols-4 gap-6 mb-8">
+    <div class="bg-gray-800 rounded-2xl p-6 shadow-md">
+        <p class="text-purple-400 mb-2 font-semibold">Saldo Total</p>
+        <h2 class="text-2xl font-bold">R$ {{ saldo_total|floatformat:2|default:"0.00" }}</h2>
+    </div>
+    <div class="bg-gray-800 rounded-2xl p-6 shadow-md">
+        <p class="text-green-400 mb-2 font-semibold">Receitas no Período</p>
+        <h2 class="text-2xl font-bold">R$ {{ receitas_mes|floatformat:2|default:"0.00" }}</h2>
+    </div>
+    <div class="bg-gray-800 rounded-2xl p-6 shadow-md">
+        <p class="text-red-400 mb-2 font-semibold">Despesas no Período</p>
+        <h2 class="text-2xl font-bold">R$ {{ despesas_mes|floatformat:2|default:"0.00" }}</h2>
+    </div>
+    <div class="bg-gray-800 rounded-2xl p-6 shadow-md">
+        <p class="text-green-300 mb-2 font-semibold">Investimentos (Meta 20%)</p>
+        <h2 class="text-2xl font-bold">R$ {{ investimentos|floatformat:2|default:"0.00" }}</h2>
+    </div>
+</div>
+
+<div class="mb-8">
+    <div class="flex justify-between items-center mb-4">
+         <h2 class="text-xl font-bold text-gray-300">Metas Próximas</h2>
+         <a href="{% url 'goals_list_create' %}" class="text-sm text-purple-400 hover:text-purple-300">Ver Todas Metas &rarr;</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for data in upcoming_goals %}
+            <div class="bg-gray-800 rounded-2xl p-4 shadow-md">
+                <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-base font-semibold">{{ data.goal.name }}</h4>
+                    {% if data.status_color == 'red' %}
+                        <span class="text-xs font-medium text-red-400 whitespace-nowrap">{{ data.status }}</span>
+                    {% elif data.days_remaining is not None %}
+                        <span class="text-xs text-gray-400 whitespace-nowrap">{{ data.days_remaining }} dias restantes</span>
+                    {% endif %}
+                </div>
+                <div class="w-full rounded-full h-1.5 mb-1"
+                     style="background-image: linear-gradient(to right, #8b5cf6 {{ data.progress_percent|stringformat:'.2f'|default:0 }}%, #4b5563 {{ data.progress_percent|stringformat:'.2f'|default:0 }}%);">
+                </div>
+                <div class="flex justify-between text-xs text-gray-400">
+                    <span>R$ {{ data.current_amount|floatformat:2 }} / R$ {{ data.goal.target_amount|floatformat:2 }}</span>
+                    <span>{{ data.progress_percent|floatformat:0 }}%</span>
+                </div>
+            </div>
+        {% empty %}
+            <div class="md:col-span-3 bg-gray-800 rounded-2xl p-6 text-center text-gray-400">
+                Nenhuma meta em andamento próxima do prazo. <a href="{% url 'goals_list_create' %}" class="text-purple-400 hover:text-purple-300">Crie uma nova meta!</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+
+    <div class="lg:col-span-2 bg-gray-800 rounded-2xl p-6">
+        <h3 class="text-xl font-bold mb-4">Receitas vs Despesas (Últimos 6 Meses)</h3>
+        <canvas id="chartReceitasDespesas" class="mb-6"></canvas>
+        <div class="grid grid-cols-2 gap-4 pt-4 text-center">
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Mês Anterior</p>
+                {% if has_previous_month_data %}
+                    <span class="text-2xl font-light {% if previous_month_profit > 0 %} text-green-400 {% elif previous_month_profit < 0 %} text-red-400 {% else %} text-gray-400 {% endif %}">
+                        R$ {{ previous_month_profit|floatformat:2 }}
+                    </span>
+                {% else %}
+                     <span class="text-2xl font-light text-gray-600">—</span>
+                {% endif %}
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Mês Atual</p>
+                 <span class="text-3xl font-semibold {% if current_month_profit > 0 %} text-green-400 {% elif current_month_profit < 0 %} text-red-400 {% else %} text-gray-400 {% endif %}">
+                     R$ {{ current_month_profit|floatformat:2 }}
+                 </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="lg:col-span-1 flex flex-col gap-8">
+        <div class="bg-gray-800 rounded-2xl p-6">
+            <h3 class="text-xl font-bold mb-4">Orçamento 50/30/20 (Período)</h3>
+            <div class="mb-4">
+                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Essenciais (Meta 50%)</span><span>R$ {{ budget.essenciais_gasto|floatformat:2 }} / R$ {{ budget.essenciais_meta|floatformat:2 }}</span></div>
+                <div class="w-full rounded-full h-1.5" style="background-image: linear-gradient(to right, #8b5cf6 {{ budget.essenciais_perc_utilizado|stringformat:".2f"|default:0 }}%, #4b5563 {{ budget.essenciais_perc_utilizado|stringformat:".2f"|default:0 }}%);"></div>
+                <p class="text-xs text-gray-400 mt-1">{{ budget.essenciais_percent_receita|floatformat:2|default:0 }}% da receita do período (Meta: 50%)</p>
+            </div>
+            <div class="mb-4">
+                 <div class="flex justify-between text-sm mb-1"><span class="font-medium">Lazer (Meta 30%)</span><span>R$ {{ budget.lazer_gasto|floatformat:2 }} / R$ {{ budget.lazer_meta|floatformat:2 }}</span></div>
+                 <div class="w-full rounded-full h-1.5" style="background-image: linear-gradient(to right, #8b5cf6 {{ budget.lazer_perc_utilizado|stringformat:".2f"|default:0 }}%, #4b5563 {{ budget.lazer_perc_utilizado|stringformat:".2f"|default:0 }}%);"></div>
+                 <p class="text-xs text-gray-400 mt-1">{{ budget.lazer_percent_receita|floatformat:2|default:0 }}% da receita do período (Meta: 30%)</p>
+            </div>
+            <div class="mb-4">
+                 <div class="flex justify-between text-sm mb-1"><span class="font-medium">Investimentos (Meta 20%)</span><span>R$ {{ budget.investimentos_gasto|floatformat:2 }} / R$ {{ budget.investimentos_meta|floatformat:2 }}</span></div>
+                 <div class="w-full rounded-full h-1.5" style="background-image: linear-gradient(to right, #8b5cf6 {{ budget.investimentos_perc_utilizado|stringformat:".2f"|default:0 }}%, #4b5563 {{ budget.investimentos_perc_utilizado|stringformat:".2f"|default:0 }}%);"></div>
+                 <p class="text-xs text-gray-400 mt-1">{{ budget.investimentos_percent_receita|floatformat:2|default:0 }}% da receita do período (Meta: 20%)</p>
+            </div>
+        </div>
+        <div class="bg-gray-800 rounded-2xl p-6">
+            <h3 class="text-xl font-bold mb-4">Gastos por Categoria (Período)</h3>
+            <div id="category-list-scroll" class="space-y-4 max-h-28 overflow-y-auto pr-2">
+                {% for cat in categorias %}
+                    <div>
+                        <div class="flex justify-between text-sm mb-1"><span class="font-medium">{{ cat.name }}</span><span>R$ {{ cat.total_gasto|floatformat:2 }}</span></div>
+                        <div class="w-full rounded-full h-1.5" style="background-image: linear-gradient(to right, #8b5cf6 {{ cat.percent_of_revenue|stringformat:".2f"|default:0 }}%, #4b5563 {{ cat.percent_of_revenue|stringformat:".2f"|default:0 }}%);"></div>
+                        <p class="text-xs text-gray-400 mt-1">{{ cat.percent_of_revenue|floatformat:2 }}% da receita do período</p>
+                    </div>
+                {% empty %}
+                    <p class="text-gray-400 text-sm">Nenhuma categoria de despesa encontrada neste período.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="bg-gray-800 rounded-2xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Transações Recentes</h3>
+                <a href="{% url 'transactions_list' %}" class="text-sm text-purple-400 hover:text-purple-300">Ver Todas &rarr;</a>
+            </div>
+            <div id="recent-transactions-scroll" class="space-y-4 max-h-32 overflow-y-auto pr-2">
+                {% for entry in recent_transactions %}
+                    <div class="flex justify-between items-center border-b border-gray-700 pb-2 last:border-b-0 last:pb-0">
+                        <div>
+                            <p class="text-sm font-medium text-gray-200">{{ entry.describe|default:entry.category.name }}</p>
+                            <p class="text-xs text-gray-400">{{ entry.date_added|naturaltime }}</p>
+                        </div>
+                        <span class="text-sm font-semibold {% if entry.category.type == 'R' %} text-green-400 {% else %} text-red-400 {% endif %} whitespace-nowrap">
+                            {% if entry.category.type == 'R' %}+{% else %}-{% endif %}R$ {{ entry.value|floatformat:2 }}
+                        </span>
+                    </div>
+                {% empty %}
+                    <p class="text-gray-400 text-sm text-center py-4">Nenhuma transação recente encontrada.</p>
+                {% endfor %}
+            </div>
+            </div>
+
+
+    </div> </div> <style>
+    #category-list-scroll::-webkit-scrollbar,
+    #recent-transactions-scroll::-webkit-scrollbar { width: 6px; } /* Aplicado a ambos */
+
+    #category-list-scroll::-webkit-scrollbar-track,
+    #recent-transactions-scroll::-webkit-scrollbar-track { background: transparent; } /* Aplicado a ambos */
+
+    #category-list-scroll::-webkit-scrollbar-thumb,
+    #recent-transactions-scroll::-webkit-scrollbar-thumb { background-color: #8b5cf6; border-radius: 10px; } /* Aplicado a ambos */
+
+    #category-list-scroll::-webkit-scrollbar-thumb:hover,
+    #recent-transactions-scroll::-webkit-scrollbar-thumb:hover { background-color: #a78bfa; } /* Aplicado a ambos */
+
+    #category-list-scroll,
+    #recent-transactions-scroll { scrollbar-width: thin; scrollbar-color: #8b5cf6 transparent; } /* Aplicado a ambos */
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('chartReceitasDespesas');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+             labels: {{ meses|safe }},
+            datasets: [
+                { label: 'Receitas', data: {{ receitas_data|safe }}, backgroundColor: '#7c3aed' },
+                { label: 'Despesas', data: {{ despesas_data|safe }}, backgroundColor: '#ef4444' }
+            ]
+        },
+        options: {
+            scales: {
+                x: { ticks: { color: '#ddd' } },
+                y: { ticks: { color: '#ddd' } }
+            },
+            plugins: { legend: { labels: { color: '#fff' } } }
+        }
+    });
+</script>
+{% endblock %}

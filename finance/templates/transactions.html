@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Transações | FinanceHub{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold">Transações</h1>
+        <p class="text-gray-400 text-sm">Lista de lançamentos (Receitas / Despesas).</p>
+    </div>
+
+    <div class="flex items-center space-x-3">
+        <form method="get" class="flex items-center space-x-2">
+            <select name="type" class="bg-gray-800 text-gray-100 p-2 rounded-md" onchange="this.form.submit()">
+                <option value="">Todos</option>
+                <option value="R" {% if request.GET.type == 'R' %}selected{% endif %}>Receitas</option>
+                <option value="D" {% if request.GET.type == 'D' %}selected{% endif %}>Despesas</option>
+            </select>
+            <input type="date" name="date_from" value="{{ request.GET.date_from }}" class="bg-gray-800 text-gray-100 p-2 rounded-md" />
+            <input type="date" name="date_to" value="{{ request.GET.date_to }}" class="bg-gray-800 text-gray-100 p-2 rounded-md" />
+            <button type="submit" class="px-3 py-2 bg-purple-600 rounded-md text-white">Filtrar</button>
+            <a href="{% url 'transactions_list' %}" class="px-3 py-2 bg-gray-600 rounded-md text-white">Limpar</a>
+        </form>
+
+        <button
+            class="px-4 py-2 bg-green-500 rounded-md text-black font-semibold"
+            onclick="openModal('entryModal')"
+        >
+            + Nova Transação
+        </button>
+    </div>
+</div>
+
+{% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <div class="p-3 rounded-md mb-2 {% if message.tags %} bg-{{ message.tags }}-500 {% else %} bg-gray-800 {% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="bg-gray-800 rounded-2xl p-4">
+    <div class="overflow-x-auto">
+        <table class="min-w-full table-auto text-left">
+            <thead>
+                <tr class="text-sm text-gray-400">
+                    <th class="px-4 py-3 text-center">Data Lançam.</th>
+                    <th class="px-4 py-3 text-center">Categoria</th>
+                    <th class="px-4 py-3 text-center">Descrição</th>
+                    <th class="px-4 py-3 text-center">Tipo</th>
+                    <th class="px-4 py-3 text-center">Data Pagam.</th>
+                    <th class="px-4 py-3 text-right">Valor</th>
+                    <th class="px-4 py-3 text-center">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if entries %}
+                    {% for e in entries %}
+                    <tr class="border-t border-gray-700">
+                        <td class="px-4 py-3 text-sm text-gray-200 text-center">
+                            {{ e.date_added|date:"d/m/Y" }} </td>
+                        <td class="px-4 py-3 text-sm text-center">{{ e.category.name }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-300 text-center">{{ e.describe|default:"—" }}</td>
+                        <td class="px-4 py-3 text-sm text-center"> {% if e.category.type == "R" %}
+                                <span class="px-2 py-1 rounded-full text-xs bg-green-600 text-black font-medium inline-block">Receita</span> {% else %}
+                                <span class="px-2 py-1 rounded-full text-xs bg-red-600 text-black font-medium inline-block">Despesa</span> {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-400 text-center">
+                            {{ e.date_payment|date:"d/m/Y"|default:"—" }} </td>
+                        <td class="px-4 py-3 text-sm text-right font-bold"> R$ {{ e.value|floatformat:2 }}
+                        </td>
+                        <td class="px-4 py-3 text-center"> <div class="flex space-x-2 justify-center"> <a href="{% url 'transactions_edit' e.pk %}" class="px-3 py-1 bg-yellow-600 rounded-md text-sm">Editar</a>
+                                <form action="{% url 'transactions_delete' e.pk %}" method="post" onsubmit="return confirm('Confirmar exclusão?')" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="px-3 py-1 bg-red-600 rounded-md text-sm">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="px-4 py-6 text-center text-gray-400">
+                            Nenhuma transação encontrada.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div
+    id="entryModal"
+    class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4
+           hidden opacity-0 transition-opacity duration-300 ease-out"
+>
+    <div
+        id="entryModalBox"
+        class="bg-gray-900 w-full max-w-2xl rounded-2xl p-6 relative
+               opacity-0 scale-95 transition-all duration-300 ease-out"
+    >
+        <button class="absolute top-4 right-4 text-gray-400" onclick="closeModal('entryModal')">✕</button>
+        <h2 class="text-xl font-bold mb-4">Nova Transação</h2>
+
+        <form method="post" action="{% url 'transactions_create' %}">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="p-3 bg-red-700 text-white rounded-md mb-4">
+                    {% for error in form.non_field_errors %} <p>{{ error }}</p> {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm text-gray-300 mb-1">{{ form.category.label }}</label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <div class="text-red-400 text-sm mt-1">{{ form.category.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-300 mb-1">Valor</label>
+                    {{ form.value }}
+                    {% if form.value.errors %}
+                        <div class="text-red-400 text-sm mt-1">{{ form.value.errors }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-300 mb-1">Data de pagamento</label>
+                    {{ form.date_payment }}
+                    {% if form.date_payment.errors %}
+                        <div class="text-red-400 text-sm mt-1">{{ form.date_payment.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm text-gray-300 mb-1">Descrição</label>
+                    {{ form.describe }}
+                    {% if form.describe.errors %}
+                        <div class="text-red-400 text-sm mt-1">{{ form.describe.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-2">
+                <button type="button" onclick="closeModal('entryModal')" class="px-4 py-2 bg-gray-700 rounded-md">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-green-500 rounded-md font-semibold text-black">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        const modalBox = document.getElementById(id + 'Box');
+        const firstInput = document.getElementById('{{ form.category.id_for_label }}');
+
+        if (!modal || !modalBox) return;
+        modal.classList.remove('hidden');
+        requestAnimationFrame(function() {
+            modal.classList.remove('opacity-0');
+            modalBox.classList.remove('opacity-0');
+            modalBox.classList.remove('scale-95');
+            if(firstInput) {
+                firstInput.focus();
+            }
+        });
+    }
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        const modalBox = document.getElementById(id + 'Box');
+        if (!modal || !modalBox) return;
+        modal.classList.add('opacity-0');
+        modalBox.classList.add('opacity-0');
+        modalBox.classList.add('scale-95');
+        setTimeout(function() {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    {% if form.errors %}
+        openModal('entryModal');
+    {% endif %}
+</script>
+{% endblock %}
