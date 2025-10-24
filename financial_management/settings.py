@@ -72,7 +72,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'financial_management.wsgi.application'
+WSGI_APPLICATION = 'financial_management.wsgi.app'
 
 DB_CONFIG = dj_database_url.config(
     # Fallback para SQLite: Se DATABASE_URL não for definida, usa o SQLite local.
