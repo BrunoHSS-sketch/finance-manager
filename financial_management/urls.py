@@ -7,15 +7,14 @@ from django.contrib.staticfiles.storage import staticfiles_storage # <--- Verifi
 
 urlpatterns = [
     # Redirecionamento para o favicon.ico
-    path(
+   path(
         "favicon.ico",
-        RedirectView.as_view(url=staticfiles_storage.url("images/favicon.ico"), permanent=True),
+        RedirectView.as_view(url="/static/images/favicon.ico", permanent=False), # Use False para não cachear o redirect durante o teste
         name="favicon_ico",
     ),
-    # Opcional: Redirecionamento para favicon.png (se necessário)
     path(
         "favicon.png",
-        RedirectView.as_view(url=staticfiles_storage.url("images/favicon-32x32.png"), permanent=True),
+        RedirectView.as_view(url="/static/images/favicon-32x32.png", permanent=False),
         name="favicon_png",
     ),
 
@@ -24,3 +23,4 @@ urlpatterns = [
     path('', include('finance.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
+
