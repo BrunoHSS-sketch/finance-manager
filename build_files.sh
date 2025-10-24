@@ -4,7 +4,7 @@
 pip install -r requirements.txt
 
 # Coletar arquivos estáticos
-python manage.py collectstatic --noinput --clear
+python manage.py collectstatic --noinput --clear -v 3
 
 python manage.py makemigrations
 python manage.py migrate --noinput
