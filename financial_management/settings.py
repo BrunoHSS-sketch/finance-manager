@@ -132,9 +132,6 @@ ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', 'finance-manager-ecru.vercel.app']
 STATIC_URL = 'static/' # URL base para servir os arquivos
 
 # Opcional: Diretórios onde o Django procura estáticos ALÉM dos apps (para collectstatic)
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
 
 # OBRIGATÓRIO para produção/collectstatic: Para onde o collectstatic COPIA os arquivos.
 # Simplificado para evitar aninhamento desnecessário.
@@ -152,4 +149,5 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/registration/login'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
 
