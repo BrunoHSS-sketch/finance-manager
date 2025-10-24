@@ -12,6 +12,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
 from .models import AccountEntry, Category, Goal
 from .forms import AccountEntryForm, CategoryForm, GoalForm
+from django.views.generic.base import RedirectView
 
 @login_required
 def dashboard(request):
@@ -483,4 +484,5 @@ def goals_delete(request, pk):
     messages.success(request, 'Meta excluída com sucesso.')
 
     redirect_url = reverse('goals_list_create') + '?status=active'
+
     return redirect(redirect_url)
