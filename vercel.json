@@ -1,21 +1,19 @@
 {
-  "builds": [
-    {
-      "src": "financial_management/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "15mb",
-        "runtime": "python3.12",
-        "buildCommand": "chmod +x build_files.sh && bash build_files.sh"
-        "outputDirectory": "staticfiles_build"
-      }
-    }
-  ],
-  "routes": [
-    { "src": "/static/(.*)", "dest": "/static/$1" },
-    { "src": "/favicon.ico", "dest": "/static/images/favicon.ico" },
-    { "src": "/(.*)", "dest": "financial_management/wsgi.py" }
-  ]
-}
-
-
+   "builds": [
+     {
+       "src": "financial_management/wsgi.py",
+       "use": "@vercel/python",
+       "config": {
+         "maxLambdaSize": "15mb",
+         "runtime": "python3.12",
+         "buildCommand": "chmod +x build_files.sh && bash build_files.sh"
+       }
+     }
+   ],
+   "routes": [
+     {
+       "src": "/(.*)",
+       "dest": "financial_management/wsgi.py"
+     }
+   ]
+ }
