@@ -1,30 +1,27 @@
 #!/bin/bash
+
 echo "INICIANDO A INSTALAÇÃO DAS DEPENDENCIAS"
-pip install -r requirements.txt
+# Use o pip versionado
+pip3.12 install -r requirements.txt
 echo "FINALIZADO A INSTALAÇÃO DAS DEPENDENCIAS"
 
+echo "INICIANDO A CRIAÇÃO DA PASTA STATICFILES E MIGRACOES"
+# Use o python versionado
+python3.12 manage.py collectstatic --noinput --clear -v 3
+python3.12 manage.py makemigrations --noinput
+python3.12 manage.py migrate --noinput
+echo "FINALIZADO A CRIAÇÃO DA PASTA STATICFILES E MIGRACOES"
 
-echo "INICIANDO A MIGRATION"
-python manage.py makemigrations
-python manage.py migrate --noinput
-echo "FINALIZADO AS MIGRATION"
+# Se você ainda estiver usando Tailwind via Django (verifique se é necessário no build)
+# python3.12 manage.py tailwind install
+# python3.12 manage.py tailwind build # Use 'build' em vez de 'start' no build
 
+# Verificações (Opcional, mas útil para depuração)
+echo "Listing contents of root:"
+ls -la
+echo "Listing contents of staticfiles_build:"
+ls -la staticfiles_build/
 
-echo "INICIANDO A INSTALAÇÃO DAS DEPENDENCIAS DO TAILWIND"
-python manage.py tailwind install
-python manage.py tailwind build
-echo "FINALIZADO A INSTALAÇÃO DAS DEPENDENCIAS DO TAILWIND"
+echo "BUILD FINISHED"
 
-
-echo "INICIANDO A CRIAÇÃO DA PASTA STATICFILES"
-mkdir -p /vercel/output/static
-cp -r staticfiles_build/* /vercel/output/static/
-python manage.py collectstatic --noinput --clear
-echo "FINALIZADO A CRIAÇÃO DA PASTA STATICFILES"
-
-echo "Listing contents of /vercel/path0/ (project root in build):"
-ls -la /vercel/path0/
-echo "Listing contents of /vercel/path0/staticfiles_build/ (if created):"
-ls -la /vercel/path0/staticfiles_build/
-
-echo "✅ BUILD FINISHED"
+# Removi o comando 'cp' e o 'tailwind start' que não fazem sentido no build
