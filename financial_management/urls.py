@@ -22,13 +22,13 @@ urlpatterns = [
     # Redirecionamento para o favicon.ico
     path(
         "favicon.ico",
-        RedirectView.as_view(url=staticfiles_storage.url("images/favicon.ico"), permanent=True),
+        RedirectView.as_view(url=staticfiles_storage.url("../finance/static/images/favicon.ico"), permanent=True),
         name="favicon_ico",
     ),
     # Opcional: Redirecionamento para favicon.png (se necessário)
     path(
         "favicon.png",
-        RedirectView.as_view(url=staticfiles_storage.url("images/favicon-32x32.png"), permanent=True), # Ou o PNG que preferir
+        RedirectView.as_view(url=staticfiles_storage.url("../finance/static/images/favicon-32x32.png"), permanent=True), # Ou o PNG que preferir
         name="favicon_png",
     ),
 
@@ -37,4 +37,5 @@ urlpatterns = [
     path('', include('finance.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
+
 
