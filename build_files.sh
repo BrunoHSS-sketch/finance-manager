@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Instalar dependências
 pip install -r requirements.txt
 
 python manage.py makemigrations
