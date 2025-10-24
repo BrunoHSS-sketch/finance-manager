@@ -129,9 +129,8 @@ ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', 'finance-manager-ecru.vercel.app']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = "staticfiles_build"
 
 # OBRIGATÓRIO para Whitenoise: Define como os arquivos estáticos são gerenciados.
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -145,6 +144,7 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/registration/login'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
 
 
 
