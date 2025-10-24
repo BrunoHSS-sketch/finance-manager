@@ -6,11 +6,16 @@
       "config": {
         "maxLambdaSize": "15mb",
         "runtime": "python3.12",
-        "buildCommand": "bash build_files.sh"
+        "buildCommand": "bash build_files.sh",
+        "outputDirectory": "staticfiles_build"
       }
     }
   ],
   "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/staticfiles_build/$1"
+    },
     {
       "src": "/(.*)",
       "dest": "financial_management/wsgi.py"
