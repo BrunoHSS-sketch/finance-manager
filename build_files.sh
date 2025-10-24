@@ -3,15 +3,13 @@
 # Instalar dependências
 pip install -r requirements.txt
 
-# Coletar arquivos estáticos
-python manage.py collectstatic --noinput --clear -v 3
-
 python manage.py makemigrations
 python manage.py migrate --noinput
+
 python manage.py tailwind install
-python manage.py collectstatic
-python manage.py tailwind start
+python manage.py tailwind build
 
+mkdir -p staticfiles_build
+python manage.py collectstatic --noinput --clear
 
-
-echo "BUILD FINISHED"
+echo "✅ BUILD FINISHED"
