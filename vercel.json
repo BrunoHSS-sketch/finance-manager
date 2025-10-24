@@ -17,6 +17,10 @@
       "dest": "/staticfiles_build/$1"
     },
     {
+      "src": "/favicon.ico",
+      "dest": "/staticfiles_build/images/favicon.ico"
+    },
+    {
       "src": "/(.*)",
       "dest": "financial_management/wsgi.py"
     }
