@@ -6,7 +6,7 @@
        "config": {
          "maxLambdaSize": "15mb",
          "runtime": "python3.12",
-         "buildCommand": "chmod +x build_files.sh && bash build_files.sh"
+         "buildCommand": "bash build_files.sh"
        }
      }
    ],
@@ -17,3 +17,4 @@
      }
    ]
  }
+
