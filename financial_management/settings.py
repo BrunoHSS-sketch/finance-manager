@@ -74,15 +74,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'financial_management.wsgi.application'
 
+DB_CONFIG = dj_database_url.config(
+    # Fallback para SQLite: Se DATABASE_URL não for definida, usa o SQLite local.
+    default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+)
+
+# 2. Adiciona opções específicas do Django *APÓS* a análise da URL
+#    (Incluindo conn_max_age, conn_health_checks, sslmode e codificação)
+if DB_CONFIG['ENGINE'] == 'django.db.backends.postgresql':
+    DB_CONFIG.update({
+        'CONN_MAX_AGE': 600,             # Reutiliza conexões por 10 minutos
+        'CONN_HEALTH_CHECKS': True,    # Verifica se a conexão ainda é válida
+        'OPTIONS': {
+            'client_encoding': 'UTF8', # Correção para problemas de Unicode
+            'sslmode': 'require',      # Garante conexão SSL com Supabase
+        }
+    })
+# Se for SQLite (fallback), não adiciona nada extra.
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
-    }
+    'default': DB_CONFIG
 }
 
 # Password validation
