@@ -129,12 +129,19 @@ ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', 'finance-manager-ecru.vercel.app']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static", # Se tiver uma pasta static na raiz do projeto
-]
-STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static" # Pasta onde collectstatic vai colocar os arquivos
+STATIC_URL = 'static/' # URL base para servir os arquivos
 
+# Opcional: Diretórios onde o Django procura estáticos ALÉM dos apps (para collectstatic)
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# OBRIGATÓRIO para produção/collectstatic: Para onde o collectstatic COPIA os arquivos.
+# Simplificado para evitar aninhamento desnecessário.
+STATIC_ROOT = BASE_DIR / "staticfiles_build"
+
+# OBRIGATÓRIO para Whitenoise: Define como os arquivos estáticos são gerenciados.
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -145,3 +152,4 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/registration/login'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
