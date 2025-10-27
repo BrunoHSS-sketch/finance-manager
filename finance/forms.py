@@ -60,7 +60,7 @@ class CategoryForm(ModelForm):
         labels = {
             'name': 'Nome da Categoria',
             'type': 'Tipo',
-            'classification': 'Classificação (Prioridade)',
+            'classification': 'Classificação',
             'financial_bucket': 'Balde Orçamentário (50/30/20)'
         }
 

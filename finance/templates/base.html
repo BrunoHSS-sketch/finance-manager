@@ -11,115 +11,99 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     <link rel="manifest" href="{% static 'images/site.webmanifest' %}">
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
-        body::-webkit-scrollbar { width: 6px; }
-        body::-webkit-scrollbar-track { background: transparent; }
-        body::-webkit-scrollbar-thumb { background-color: #8b5cf6; border-radius: 10px; }
-        body::-webkit-scrollbar-thumb:hover { background-color: #a78bfa; }
-        html { scrollbar-width: thin; scrollbar-color: #8b5cf6 transparent; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .nav-link .material-symbols-outlined { vertical-align: bottom; font-size: 1.25rem; }
+        body::-webkit-scrollbar { width: 6px; } body::-webkit-scrollbar-track { background: transparent; } body::-webkit-scrollbar-thumb { background-color: #8b5cf6; border-radius: 10px; } body::-webkit-scrollbar-thumb:hover { background-color: #a78bfa; } html { scrollbar-width: thin; scrollbar-color: #8b5cf6 transparent; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; } .nav-link .material-symbols-outlined { vertical-align: bottom; font-size: 1.25rem; }
+        body.swal2-shown > [aria-hidden="true"] { transition: 0.1s filter; filter: blur(4px); } .swal2-popup { background-color: #1f2937 !important; color: #d1d5db !important; } .swal2-title { color: #f9fafb !important; } .swal2-confirm { background-color: #dc2626 !important; border-color: #dc2626 !important; } .swal2-confirm:hover { background-color: #b91c1c !important; border-color: #b91c1c !important; } .swal2-cancel { background-color: #4b5563 !important; border-color: #4b5563 !important; } .swal2-cancel:hover { background-color: #374151 !important; border-color: #374151 !important; } .swal2-styled:focus { box-shadow: none !important; }
     </style>
-    <script>
-      tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], }, } } }
-    </script>
+    <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], }, } } }</script>
 </head>
 <body class="bg-gray-900 text-gray-100 flex min-h-screen font-sans">
-
     <aside class="w-64 bg-gray-950 p-6 flex flex-col justify-between h-screen overflow-y-auto sticky top-0">
         <div>
             <h1 class="text-2xl font-bold text-purple-400 mb-8">FinanceHub</h1>
-
             <nav class="space-y-2">
-                 <a href="{% url 'dashboard' %}" id="nav-dashboard"
-                   class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
-                    <span class="material-symbols-outlined">dashboard</span>
-                    <span>Dashboard</span>
-                </a>
-                <a href="{% url 'transactions_list' %}" id="nav-transactions"
-                   class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
-                    <span class="material-symbols-outlined">receipt_long</span>
-                    <span>Lançamentos</span> </a>
-                <a href="{% url 'category_list_create' %}" id="nav-categories"
-                   class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
-                    <span class="material-symbols-outlined">label</span>
-                    <span>Categorias</span>
-                </a>
-                <a href="{% url 'account_list_create' %}" id="nav-accounts"
-                   class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
-                    <span class="material-symbols-outlined">account_balance_wallet</span>
-                    <span>Contas</span>
-                </a>
-
-                <a href="{% url 'recurring_transaction_list_create' %}" id="nav-recurring"
-                   class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
-                    <span class="material-symbols-outlined">autorenew</span> <span>Recorrências</span>
-                </a>
-                <a href="{% url 'goals_list_create' %}" id="nav-goals"
-                    class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
-                    <span class="material-symbols-outlined">flag</span>
-                    <span>Metas</span>
-                </a>
+                 <a href="{% url 'dashboard' %}" id="nav-dashboard" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150"><span class="material-symbols-outlined">dashboard</span><span>Dashboard</span></a>
+                 <a href="{% url 'transactions_list' %}" id="nav-transactions" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150"><span class="material-symbols-outlined">receipt_long</span><span>Lançamentos</span></a>
+                 <a href="{% url 'category_list_create' %}" id="nav-categories" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150"><span class="material-symbols-outlined">label</span><span>Categorias</span></a>
+                 <a href="{% url 'account_list_create' %}" id="nav-accounts" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150"><span class="material-symbols-outlined">account_balance_wallet</span><span>Contas</span></a>
+                 <a href="{% url 'recurring_transaction_list_create' %}" id="nav-recurring" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150"><span class="material-symbols-outlined">autorenew</span><span>Recorrências</span></a>
+                 <a href="{% url 'goals_list_create' %}" id="nav-goals" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150"><span class="material-symbols-outlined">flag</span><span>Metas</span></a>
             </nav>
         </div>
-        {% if user.is_authenticated %}
-        <div class="mt-auto pt-6 border-t border-gray-700">
-             <form method="post" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit" class="w-full flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:bg-red-800 hover:text-red-200 transition-colors duration-150">
-                    <span class="material-symbols-outlined">logout</span>
-                    <span>Sair</span>
-                </button>
-            </form>
-        </div>
-        {% endif %}
+        {% if user.is_authenticated %}<div class="mt-auto pt-6 border-t border-gray-700"><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit" class="w-full flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:bg-red-800 hover:text-red-200 transition-colors duration-150"><span class="material-symbols-outlined">logout</span><span>Sair</span></button></form></div>{% endif %}
     </aside>
+    <main class="flex-1 p-8 overflow-y-auto">{% block content %}{% endblock %}</main>
 
-    <main class="flex-1 p-8 overflow-y-auto"> {% block content %}{% endblock %}
-    </main>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentPath = window.location.pathname;
-            const navLinks = document.querySelectorAll('.nav-link');
-            const defaultClasses = ['text-gray-300', 'hover:bg-gray-800', 'hover:text-purple-300'];
-            const activeClasses = ['text-purple-400', 'font-medium', 'bg-gray-800'];
+        // Script highlight menu (sem alterações)
+        document.addEventListener('DOMContentLoaded',function(){const t=window.location.pathname,e=document.querySelectorAll(".nav-link"),n=["text-gray-300","hover:bg-gray-800","hover:text-purple-300"],o=["text-purple-400","font-medium","bg-gray-800"];e.forEach(e=>{const i=e.getAttribute("href");let s=!1;("/"===i&&"/"===t||"/"!==i&&t.startsWith(i)&&(t.length===i.length||"/"===t[i.length]))&&(s=!0),s?(e.classList.remove(...n.filter(t=>!o.includes(t))),e.classList.add(...o)):(e.classList.remove(...o),n.forEach(t=>{e.classList.contains(t)||e.classList.add(t)}),o.forEach(t=>{e.classList.contains(t)&&e.classList.remove(t)}))})});
 
-            navLinks.forEach(link => {
-                const linkPath = link.getAttribute('href');
-                let isActive = false;
-                // Trata o caso da raiz '/' especificamente para o dashboard
-                if (linkPath === '/' && currentPath === '/') {
-                    isActive = true;
-                } else if (linkPath !== '/' && currentPath.startsWith(linkPath)) {
-                    // Garante que não seleciona '/transactions/' quando está em '/transactions/edit/' (se fosse o caso)
-                    // A condição original já fazia isso bem.
-                    if (currentPath.length === linkPath.length || currentPath[linkPath.length] === '/') {
-                         isActive = true;
+        // ===============================================
+        // SCRIPT ATUALIZADO: confirmDelete com verificação AJAX
+        // ===============================================
+        function confirmDelete(event, message, checkUrl = null) {
+            // Previne a submissão padrão do formulário
+            event.preventDefault();
+
+            // Pega o formulário que o botão pertence
+            const form = event.target.closest('form');
+
+            // Mensagem padrão se nenhuma for fornecida
+            const confirmationMessage = message || 'Tem certeza que deseja excluir este item? Esta ação não pode ser desfeita.';
+
+            Swal.fire({
+                title: 'Confirmar Exclusão',
+                text: confirmationMessage,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626', // Vermelho
+                cancelButtonColor: '#4b5563',  // Cinza
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                // Se o utilizador clicou em "Sim, excluir!"
+                if (result.isConfirmed) {
+
+                    // Se uma URL de verificação foi fornecida (ex: para categorias)
+                    if (checkUrl) {
+                        fetch(checkUrl) // Faz a chamada AJAX (GET por padrão)
+                            .then(response => response.json()) // Converte a resposta para JSON
+                            .then(data => {
+                                // Se a resposta diz que PODE deletar
+                                if (data.can_delete) {
+                                    form.submit(); // Submete o formulário
+                                } else {
+                                    // Se NÃO PODE deletar, mostra outro modal com o erro
+                                    Swal.fire({
+                                        title: 'Erro ao Excluir',
+                                        text: data.message, // Mensagem vinda do Django
+                                        icon: 'error',
+                                        confirmButtonColor: '#4b5563' // Cinza
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                // Em caso de erro na chamada AJAX
+                                console.error('Erro ao verificar exclusão:', error);
+                                Swal.fire({
+                                    title: 'Erro de Rede',
+                                    text: 'Não foi possível verificar se o item pode ser excluído. Tente novamente.',
+                                    icon: 'error',
+                                    confirmButtonColor: '#4b5563'
+                                });
+                            });
+                    } else {
+                        // Se NENHUMA URL de verificação foi passada, submete direto
+                        form.submit();
                     }
                 }
-
-                if (isActive) {
-                    link.classList.remove(...defaultClasses.filter(cls => !activeClasses.includes(cls)));
-                    link.classList.add(...activeClasses);
-                } else {
-                    link.classList.remove(...activeClasses);
-                    // Garante que as classes default estão presentes se não estiver ativo
-                    defaultClasses.forEach(cls => {
-                         if (!link.classList.contains(cls)) { link.classList.add(cls); }
-                    });
-                     // Garante que as classes ativas não estão presentes
-                     activeClasses.forEach(cls => {
-                          if (link.classList.contains(cls)) { link.classList.remove(cls); }
-                     });
-                }
             });
-        });
+        }
     </script>
 </body>
 </html>
