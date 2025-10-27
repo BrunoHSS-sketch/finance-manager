@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Minhas Contas{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4 md:p-6">
+
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-white">Gerenciar Contas</h1>
+        <p class="text-gray-400">Crie e organize suas contas (ex: Carteira, Conta Corrente, Cartão de Crédito).</p>
+    </div>
+
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="p-4 rounded-md {% if message.tags == 'error' %}bg-red-800 border border-red-600{% else %}bg-green-800 border border-green-600{% endif %} text-white">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-1">
+            <div class="bg-gray-800 rounded-lg shadow-xl p-4 md:p-6 sticky top-6">
+                <h2 class="text-2xl font-bold text-white mb-4">Nova Conta</h2>
+                <form action="{% url 'account_list_create' %}" method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-300">{{ form.name.label }}</label>
+                        {{ form.name }}
+                        {% for error in form.name.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.type.id_for_label }}" class="block text-sm font-medium text-gray-300">{{ form.type.label }}</label>
+                        {{ form.type }}
+                        {% for error in form.type.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+                    </div>
+                    
+                    <div class="mt-6">
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+                            Salvar Nova Conta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2">
+            <div class="bg-gray-800 rounded-lg shadow-xl p-4 md:p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-white">Contas Registradas</h2>
+                    <div class="flex space-x-2">
+                        <a href="?status=active" class="px-3 py-1 text-sm font-medium rounded-full {% if current_filter == 'active' %}bg-blue-600 text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600{% endif %}">Ativas</a>
+                        <a href="?status=inactive" class="px-3 py-1 text-sm font-medium rounded-full {% if current_filter == 'inactive' %}bg-blue-600 text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600{% endif %}">Inativas</a>
+                        <a href="?status=all" class="px-3 py-1 text-sm font-medium rounded-full {% if current_filter == 'all' %}bg-blue-600 text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600{% endif %}">Todas</a>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-max table-auto text-left text-gray-300">
+                        <thead class="bg-gray-700">
+                            <tr>
+                                <th class="p-3">Nome da Conta</th>
+                                <th class="p-3">Tipo</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            {% for account in accounts %}
+                            <tr class="hover:bg-gray-700">
+                                <td class="p-3 font-medium">{{ account.name }}</td>
+                                <td class="p-3">{{ account.get_type_display }}</td>
+                                <td class="p-3">
+                                    {% if account.is_active %}
+                                        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-green-800 text-green-300">Ativa</span>
+                                    {% else %}
+                                        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-600 text-gray-300">Inativa</span>
+                                    {% endif %}
+                                </td>
+                                
+                                <td class="p-3 text-center space-x-2 whitespace-nowrap">
+                                    <a href="{% url 'account_edit' account.pk %}?status={{ current_filter }}" class="inline-block px-3 py-1 text-sm bg-gray-600 hover:bg-gray-500 text-white rounded-md transition duration-150">Editar</a>
+                                    
+                                    <form action="{% url 'account_toggle_active' account.pk %}" method="POST" class="inline-block">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="current_filter" value="{{ current_filter }}">
+                                        {% if account.is_active %}
+                                            <button type="submit" class="inline-block px-3 py-1 text-sm bg-yellow-700 hover:bg-yellow-600 text-white rounded-md transition duration-150">Inativar</button>
+                                        {% else %}
+                                            <button type="submit" class="inline-block px-3 py-1 text-sm bg-green-700 hover:bg-green-600 text-white rounded-md transition duration-150">Reativar</button>
+                                        {% endif %}
+                                    </form>
+
+                                    <form action="{% url 'account_delete' account.pk %}" method="POST" class="inline-block" onsubmit="return confirm('Atenção: A conta só pode ser excluída se não houver lançamentos ou transferências associadas a ela.\n\nDeseja continuar?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="inline-block px-3 py-1 text-sm bg-red-800 hover:bg-red-700 text-white rounded-md transition duration-150">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="p-4 text-center text-gray-400">
+                                    Nenhuma conta encontrada.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

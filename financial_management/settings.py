@@ -130,7 +130,7 @@ ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', 'finance-manager-ecru.vercel.app']
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = "staticfiles_build"
+STATIC_ROOT = "staticfiles_build/"
 
 # OBRIGATÓRIO para Whitenoise: Define como os arquivos estáticos são gerenciados.
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
