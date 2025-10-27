@@ -75,7 +75,13 @@
                     <span class="material-symbols-outlined">label</span>
                     <span>Categorias</span>
                 </a>
-                 <a href="{% url 'goals_list_create' %}" id="nav-goals"
+
+                <a href="{% url 'account_list_create' %}" id="nav-accounts"
+                   class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    <span>Contas</span>
+                </a>
+                <a href="{% url 'goals_list_create' %}" id="nav-goals"
                     class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
                     <span class="material-symbols-outlined">flag</span>
                     <span>Metas</span>
@@ -110,12 +116,16 @@
                     }
                 }
 
+                // ===============================================
+                // CORREÇÃO DE BUG NO JAVASCRIPT
+                // (Estava a usar 'baseClasses' em vez de 'defaultClasses')
+                // ===============================================
                 if (isActive) {
-                    link.classList.remove(...baseClasses.filter(cls => !activeClasses.includes(cls)));
+                    link.classList.remove(...defaultClasses.filter(cls => !activeClasses.includes(cls))); // <--- CORRIGIDO
                     link.classList.add(...activeClasses);
                 } else {
                     link.classList.remove(...activeClasses);
-                    baseClasses.forEach(cls => {
+                    defaultClasses.forEach(cls => { // <--- CORRIGIDO
                          if (!link.classList.contains(cls)) {
                               link.classList.add(cls);
                          }
