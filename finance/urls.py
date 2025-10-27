@@ -27,6 +27,12 @@ urlpatterns = [
     path('categories/<int:pk>/edit/', views.category_edit, name='category_edit'),
     path('categories/<int:pk>/toggle/', views.category_toggle_active, name='category_toggle_active'),
     path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
+    # ===============================================
+    # NOVA URL: Para verificar exclusão de Categoria via AJAX
+    # ===============================================
+    path('categories/<int:pk>/check_delete/', views.category_check_delete, name='category_check_delete'),
+    # ===============================================
+
 
     # URLs de Contas
     path('accounts/', views.account_list_create, name='account_list_create'),
@@ -39,12 +45,9 @@ urlpatterns = [
     path('goals/<int:pk>/edit/', views.goals_edit, name='goals_edit'),
     path('goals/<int:pk>/delete/', views.goals_delete, name='goals_delete'),
 
-    # ===============================================
-    # NOVAS URLs: Para Transações Recorrentes
-    # ===============================================
+    # URLs de Transações Recorrentes
     path('recurring/', views.recurring_transaction_list_create, name='recurring_transaction_list_create'),
     path('recurring/<int:pk>/edit/', views.recurring_transaction_edit, name='recurring_transaction_edit'),
     path('recurring/<int:pk>/toggle/', views.recurring_transaction_toggle_active, name='recurring_transaction_toggle_active'),
     path('recurring/<int:pk>/delete/', views.recurring_transaction_delete, name='recurring_transaction_delete'),
-    # ===============================================
 ]
