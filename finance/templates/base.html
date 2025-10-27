@@ -17,40 +17,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" />
     <style>
-        /* Estilo da Scrollbar Principal */
         body::-webkit-scrollbar { width: 6px; }
         body::-webkit-scrollbar-track { background: transparent; }
         body::-webkit-scrollbar-thumb { background-color: #8b5cf6; border-radius: 10px; }
         body::-webkit-scrollbar-thumb:hover { background-color: #a78bfa; }
         html { scrollbar-width: thin; scrollbar-color: #8b5cf6 transparent; }
-
-        /* Estilo para Google Icons (Material Symbols) */
-        .material-symbols-outlined {
-          font-variation-settings:
-          'FILL' 0,
-          'wght' 400,
-          'GRAD' 0,
-          'opsz' 24
-        }
-
-        /* Ajuste fino para alinhamento vertical dos ícones com o texto */
-        .nav-link .material-symbols-outlined {
-            vertical-align: bottom; /* Ou 'middle' se preferir */
-            font-size: 1.25rem; /* Ajuste o tamanho se necessário */
-            /* Removido margin-right para usar space-x-3 do link */
-        }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .nav-link .material-symbols-outlined { vertical-align: bottom; font-size: 1.25rem; }
     </style>
-
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            },
-          }
-        }
-      }
+      tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], }, } } }
     </script>
 </head>
 <body class="bg-gray-900 text-gray-100 flex min-h-screen font-sans">
@@ -68,72 +44,82 @@
                 <a href="{% url 'transactions_list' %}" id="nav-transactions"
                    class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
                     <span class="material-symbols-outlined">receipt_long</span>
-                    <span>Transações</span>
-                </a>
+                    <span>Lançamentos</span> </a>
                 <a href="{% url 'category_list_create' %}" id="nav-categories"
                    class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
                     <span class="material-symbols-outlined">label</span>
                     <span>Categorias</span>
                 </a>
-
                 <a href="{% url 'account_list_create' %}" id="nav-accounts"
                    class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
                     <span class="material-symbols-outlined">account_balance_wallet</span>
                     <span>Contas</span>
+                </a>
+
+                <a href="{% url 'recurring_transaction_list_create' %}" id="nav-recurring"
+                   class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
+                    <span class="material-symbols-outlined">autorenew</span> <span>Recorrências</span>
                 </a>
                 <a href="{% url 'goals_list_create' %}" id="nav-goals"
                     class="nav-link flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-purple-300 transition-colors duration-150">
                     <span class="material-symbols-outlined">flag</span>
                     <span>Metas</span>
                 </a>
-                </nav>
+            </nav>
         </div>
-        </aside>
+        {% if user.is_authenticated %}
+        <div class="mt-auto pt-6 border-t border-gray-700">
+             <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:bg-red-800 hover:text-red-200 transition-colors duration-150">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span>Sair</span>
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </aside>
 
-    <main class="flex-1 p-8">
-        {% block content %}{% endblock %}
+    <main class="flex-1 p-8 overflow-y-auto"> {% block content %}{% endblock %}
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-link');
-
             const defaultClasses = ['text-gray-300', 'hover:bg-gray-800', 'hover:text-purple-300'];
             const activeClasses = ['text-purple-400', 'font-medium', 'bg-gray-800'];
 
             navLinks.forEach(link => {
                 const linkPath = link.getAttribute('href');
                 let isActive = false;
-
-                if (linkPath === currentPath) {
+                // Trata o caso da raiz '/' especificamente para o dashboard
+                if (linkPath === '/' && currentPath === '/') {
                     isActive = true;
                 } else if (linkPath !== '/' && currentPath.startsWith(linkPath)) {
-                    // Verificação adicional para evitar que '/' corresponda a '/accounts/login/' etc.
-                    // Garantir que a próxima letra no path atual seja '/' ou fim da string
+                    // Garante que não seleciona '/transactions/' quando está em '/transactions/edit/' (se fosse o caso)
+                    // A condição original já fazia isso bem.
                     if (currentPath.length === linkPath.length || currentPath[linkPath.length] === '/') {
                          isActive = true;
                     }
                 }
 
-                // ===============================================
-                // CORREÇÃO DE BUG NO JAVASCRIPT
-                // (Estava a usar 'baseClasses' em vez de 'defaultClasses')
-                // ===============================================
                 if (isActive) {
-                    link.classList.remove(...defaultClasses.filter(cls => !activeClasses.includes(cls))); // <--- CORRIGIDO
+                    link.classList.remove(...defaultClasses.filter(cls => !activeClasses.includes(cls)));
                     link.classList.add(...activeClasses);
                 } else {
                     link.classList.remove(...activeClasses);
-                    defaultClasses.forEach(cls => { // <--- CORRIGIDO
-                         if (!link.classList.contains(cls)) {
-                              link.classList.add(cls);
-                         }
+                    // Garante que as classes default estão presentes se não estiver ativo
+                    defaultClasses.forEach(cls => {
+                         if (!link.classList.contains(cls)) { link.classList.add(cls); }
                     });
+                     // Garante que as classes ativas não estão presentes
+                     activeClasses.forEach(cls => {
+                          if (link.classList.contains(cls)) { link.classList.remove(cls); }
+                     });
                 }
             });
         });
     </script>
 </body>
-
 </html>

@@ -11,20 +11,16 @@ urlpatterns = [
     path('transactions/<int:pk>/delete/', views.transactions_delete, name='transactions_delete'),
 
     # URLs de Transações (Tipos Especiais)
-    path('transactions/create_installment/', views.transactions_create_installment,
-         name='transactions_create_installment'),
+    path('transactions/create_installment/', views.transactions_create_installment, name='transactions_create_installment'),
     path('transactions/create_transfer/', views.transactions_create_transfer, name='transactions_create_transfer'),
 
     # URLs de Plano de Parcelamento
     path('installments/<int:plan_pk>/edit/', views.installment_plan_edit, name='installment_plan_edit'),
     path('installments/<int:plan_pk>/delete/', views.installment_plan_delete, name='installment_plan_delete'),
 
-    # ===============================================
-    # NOVAS URLs: Para editar/excluir Transferências
-    # ===============================================
+    # URLs de Transferências
     path('transfers/<int:pk>/edit/', views.transfer_edit, name='transfer_edit'),
     path('transfers/<int:pk>/delete/', views.transfer_delete, name='transfer_delete'),
-    # ===============================================
 
     # URLs de Categorias
     path('categories/', views.category_list_create, name='category_list_create'),
@@ -42,4 +38,13 @@ urlpatterns = [
     path('goals/', views.goals_list_create, name='goals_list_create'),
     path('goals/<int:pk>/edit/', views.goals_edit, name='goals_edit'),
     path('goals/<int:pk>/delete/', views.goals_delete, name='goals_delete'),
+
+    # ===============================================
+    # NOVAS URLs: Para Transações Recorrentes
+    # ===============================================
+    path('recurring/', views.recurring_transaction_list_create, name='recurring_transaction_list_create'),
+    path('recurring/<int:pk>/edit/', views.recurring_transaction_edit, name='recurring_transaction_edit'),
+    path('recurring/<int:pk>/toggle/', views.recurring_transaction_toggle_active, name='recurring_transaction_toggle_active'),
+    path('recurring/<int:pk>/delete/', views.recurring_transaction_delete, name='recurring_transaction_delete'),
+    # ===============================================
 ]
