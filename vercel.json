@@ -20,7 +20,13 @@
       "src": "/(.*)",
       "dest": "financial_management/wsgi.py"
     }
-  ]
+  ],
+  "crons": [
+        {
+            "path": "/api/cron/generate_recurrences",
+            "schedule": "0 5 * * *"
+        }
+    ]
 }
 
 

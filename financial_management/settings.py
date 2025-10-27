@@ -145,6 +145,7 @@ LOGOUT_REDIRECT_URL = '/registration/login'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 
 

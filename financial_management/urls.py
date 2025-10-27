@@ -1,26 +1,46 @@
 # financial_management/urls.py
+
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic.base import RedirectView # <--- Verifique/Adicione esta linha
-from django.contrib.staticfiles.storage import staticfiles_storage # <--- Verifique/Adicione esta linha
-# from django.conf import settings # <- Esta não é estritamente necessária aqui
+from django.http import HttpResponse  # <--- IMPORT ADICIONADO
+from django.core import management  # <--- IMPORT ADICIONADO
+from django.conf import settings  # <--- IMPORT ADICIONADO
+
+
+# ===============================================
+# FUNÇÃO SIMPLES PARA A VERCEL CHAMAR O CRON
+# ===============================================
+def vercel_cron_handler(request):
+    """
+    View simples que a Vercel chama.
+    Ela executa o management command e retorna uma resposta HTTP.
+    Adicione uma camada de segurança se precisar (ex: verificar um header secreto).
+    """
+    # Simples verificação de segurança (opcional, mas recomendado)
+    # Você precisaria definir CRON_SECRET no seu ambiente Vercel
+    # auth_header = request.headers.get('Authorization')
+    # expected_secret = f"Bearer {settings.CRON_SECRET}"
+    # if not settings.CRON_SECRET or auth_header != expected_secret:
+    #    return HttpResponse("Unauthorized", status=401)
+
+    try:
+        management.call_command('generate_recurrences')
+        return HttpResponse("Cron job executed successfully.")
+    except Exception as e:
+        # Logar o erro seria ideal aqui
+        return HttpResponse(f"Error executing cron job: {e}", status=500)
+
+
+# ===============================================
 
 urlpatterns = [
-    # Redirecionamento para o favicon.ico
-   path(
-        "favicon.ico",
-        RedirectView.as_view(url="/static/images/favicon.ico", permanent=False), # Use False para não cachear o redirect durante o teste
-        name="favicon_ico",
-    ),
-    path(
-        "favicon.png",
-        RedirectView.as_view(url="/static/images/favicon-32x32.png", permanent=False),
-        name="favicon_png",
-    ),
-
-    # Suas rotas existentes:
     path('admin/', admin.site.urls),
-    path('', include('finance.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
-]
+    path('accounts/', include('django.contrib.auth.urls')),  # Para login/logout
+    path('', include('finance.urls')),  # Inclui as URLs da sua app finance
 
+    # ===============================================
+    # NOVA ROTA PARA O CRON DA VERCEL
+    # ===============================================
+    path('api/cron/generate_recurrences', vercel_cron_handler, name='vercel_cron_handler'),
+    # ===============================================
+]
