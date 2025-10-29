@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(2*6zn_2!wyf9zrvgcd2k2(n4@74uc5@159nw2#_!3m6)qewxk'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -146,6 +146,7 @@ LOGOUT_REDIRECT_URL = '/registration/login'
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+
 
 
 
